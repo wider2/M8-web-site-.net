@@ -1,0 +1,239 @@
+﻿@model IEnumerable<M8Solutions.M8task>
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<script type="text/javascript">
+    function OpenOverlay() {
+        document.getElementById('id').value = "0";
+        document.getElementById('field1').value = "";
+        document.getElementById('field2').value = "";
+        document.getElementById('field3').value = "";
+        //document.getElementById('field1').focus();
+    }
+    function EditRecord(id) {
+        document.getElementById('id').value = id;
+        document.getElementById('field1').value = document.getElementById('s_' + id).innerHTML.trim();
+        document.getElementById('field2').value = document.getElementById('d_' + id).innerHTML.trim();
+        document.getElementById('field3').value = document.getElementById('f_' + id).innerHTML.trim();
+    }
+    
+    function SaveRecord() {
+        var id = document.getElementById('id').value;
+        if (id == '') id = 0;
+        var field1 = document.getElementById('field1').value;
+        var field2 = document.getElementById('field2').value;
+        var field3 = document.getElementById('field3').value;
+
+        var errStr = '';
+        if (field1.length == 0) errStr = 'Subject is the mandotory field.<br />';
+        if (field2.length == 0) errStr += 'Description is the mandotory field.<br />';
+        if (field3.length == 0) errStr += 'Footer is the mandotory field.<br />';
+        document.getElementById('overlay_notification').innerHTML = errStr;
+
+        if (errStr.length == 0) {
+            var jsondata = { id: id, subject: field1, description: field2, footer: field3 };
+            var options = {};
+            options.url = "/Home/SaveItem";
+            options.type = "POST";
+            options.contentType = "application/json; charset=utf-8";
+            options.dataType = "json";
+            options.data = JSON.stringify(jsondata);
+            options.success = function (data) {
+                //$("#output").html('Server return result: ' + data.success + '; ');
+                window.location.href = '#close';
+
+                if (id != 0) {
+                    document.getElementById('s_' + id).innerHTML = field1;
+                    document.getElementById('d_' + id).innerHTML = field2;
+                    document.getElementById('f_' + id).innerHTML = field3;
+                } else {
+                    if (data.success != null) {
+                        if (data.success.toString() == 'true') {
+                            window.location.reload();
+                        }
+                    }
+                }
+            };
+            options.error = function () {
+                $("#output").html("Error while calling the server.");
+            };
+            $.ajax(options);
+        }
+    }
+
+
+    function DeleteRecord(param) {
+        var id = document.getElementById('id').value;
+        if (param != '') id = param;
+        if (id == '') id = 0;
+        //alert(param + '; ' + id);
+        document.getElementById('overlay_notification').innerHTML = '';
+                
+        if (id == '0') {
+            document.getElementById('overlay_notification').innerHTML = 'No record found for delete.';
+        } else {
+            var jsondata = { id: id }
+            var options = {};
+            options.url = "/Home/DeleteItem";
+            options.type = "GET";
+            options.contentType = "application/json; charset=utf-8";
+            options.dataType = "json";
+            options.data = jsondata;
+            options.success = function (data) {                
+                window.location.href = '#close';
+
+                //$("#output").html('Server return result:' + data.success + '; ');
+                if (data.success != null) {
+                    if (data.success.toString() == 'true') {
+                        document.getElementById(id).style.display = 'none';
+                    }
+                }
+            };
+            options.error = function () {
+                $("#output").html("Error while calling the server.");
+            };
+            $.ajax(options);
+        }
+    }
+
+    function AddNewRecord() {
+        var field1 = document.getElementById('field1').value;
+        var field2 = document.getElementById('field2').value;
+        var field3 = document.getElementById('field3').value;
+
+        var errStr = '';
+        if (field1.length == 0) errStr = 'Subject is the mandotory field.<br />';
+        if (field2.length == 0) errStr += 'Description is the mandotory field.<br />';
+        if (field3.length == 0) errStr += 'Footer is the mandotory field.<br />';
+        document.getElementById('overlay_notification').innerHTML = errStr;
+
+        if (errStr.length == 0) {
+            var jsondata = { id: 0, subject: field1, description: field2, footer: field3 };
+            var options = {};
+            options.url = "/Home/AddNewItem";
+            options.type = "POST";
+            options.contentType = "application/json; charset=utf-8";
+            options.dataType = "json";
+            options.data = JSON.stringify(jsondata);
+            options.success = function (data) {
+                //$("#output").html('Server return result: ' + data.success + '; ');
+                window.location.href = '#close';
+
+                if (data.success != null) {
+                    if (data.success.toString() == 'true') {
+                        window.location.reload();
+                    }
+                }
+            };
+            options.error = function () {
+                $("#output").html("Error while calling the server.");
+            };
+            $.ajax(options);
+        }
+    }
+</script>
+
+    
+<div class="page">
+    <div class="wide_top_static">
+        <div class="wide_static">
+            <div class="subject_static">
+                Lorem Ipsum
+            </div>
+            <div class="text_static">
+                Nulla non tortor ut lorem ornane auctor. Quisque sagittis rutrum purus, vitae accumsan dui imperdiet non. Nulla aliquet, leo in dapibus posuere, ante tellus aliquet mi, et venenatis enim turpis eget nibh. Maecenas nec quam massa. Mauris iaculis egestas erat, eu dictum purus ultricies non. Phasellus pretium purus massa, at euismod dui feugiat quis. Aenean id ligula facilisis, posuere sapien vitae, pulvinar urna. In et pulvinar lorem. Vestibulum luctus convallis urna nec scelerisque.
+            </div>
+            <div class="text_static">
+                Nam faucibus lacus at auctor euismod. Proin est massa, sagittis eget porta sed, convallis aliquet lacus. Vestibulum blandit egestas ultrices. Sed mattis sapien arcu, pretium fringilla turpis pulvinar in. Donec dolor risus, aliquam vel elit eu, finibus maximus eros. Duis viverra ipsum varius ullamcorper consequat. Quisque ac magna tortor. In non placerat nulla. Etiam accumsan vitae urna vitae finibus. Nam commodo libero at lacus sodales, quis mattis lorem ultrices. Nam interdum tempus congue.
+            </div>
+            <div class="text_footer">
+                Lorem Ipsum
+            </div>
+        </div>
+        <img class="img" src="~/images/photo.jpg" border="0" width="360" height="540" />
+    </div>
+
+
+    <div class="narrow_top_static">
+        <img class="img" src="~/images/photo.jpg" border="0" width="272" />
+        <div class="narrow_static">
+            <div class="subject_static">
+                Lorem Ipsum
+            </div>
+            <div class="text_static">
+                Nulla non tortor ut lorem ornane auctor. Quisque sagittis rutrum purus, vitae accumsan dui imperdiet non. Nulla aliquet, leo in dapibus posuere, ante tellus aliquet mi, et venenatis enim turpis eget nibh. Maecenas nec quam massa. Mauris iaculis egestas erat, eu dictum purus ultricies non. Phasellus pretium purus massa, at euismod dui feugiat quis. Aenean id ligula facilisis, posuere sapien vitae, pulvinar urna. In et pulvinar lorem. Vestibulum luctus convallis urna nec scelerisque.   
+            </div>
+            <div class="text_static">
+                Nam faucibus lacus at auctor euismod. Proin est massa, sagittis eget porta sed, convallis aliquet lacus. Vestibulum blandit egestas ultrices. Sed mattis sapien arcu, pretium fringilla turpis pulvinar in. Donec dolor risus, aliquam vel elit eu, finibus maximus eros. Duis viverra ipsum varius ullamcorper consequat. Quisque ac magna tortor. In non placerat nulla. Etiam accumsan vitae urna vitae finibus. Nam commodo libero at lacus sodales, quis mattis lorem ultrices. Nam interdum tempus congue.
+            </div>
+            <div class="text_footer">
+                Lorem Ipsum
+            </div>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+    <div class="separator">
+        <a href="#window1" onclick="OpenOverlay()"><img class="img_add" src="~/images/Add.png" border="0" /></a>
+    </div>
+
+    <div class="text_notice">
+        @ViewBag.StatusMessage
+    </div>
+    <div id="output" class="test"></div>
+
+    @{int row = 0;}
+    @foreach (M8task item in Model)
+    {
+        {row += 1; }
+        <div id="@item.Id" class="block_whole_item">
+            <a name="item_@item.Id"></a>
+            <div class="block_id">
+                @row.
+            </div>
+            <div class="block3items">
+                <div id="s_@item.Id" class="field_item">
+                    @item.Subject.Trim()
+                </div>
+                <div id="d_@item.Id" class="field_item">
+                    @item.Description.Trim()
+                </div>
+                <div id="f_@item.Id" class="field_item">
+                    @item.Footer.Trim()
+                </div>
+            </div>
+            <div class="block_edit">
+                <a href="#window1" onclick="EditRecord(@item.Id)"><img src="~/images/Edit.png" width="23" border="0" /></a>
+            </div>
+            <div class="block_delete">
+                <a href="javascript:void(0)" onclick="DeleteRecord(@item.Id)"><img src="~/images/Delete.png" border="0" /></a>
+            </div>
+            <div class="clear"></div>
+        </div>
+    }
+    <a name="bottom"></a>
+</div>
+
+
+<div class="dm-overlay" id="window1">
+    <div class="dm-table">
+        <div class="dm-cell">
+            <div class="dm-modal">
+                <div class="overlay_footer_text">Lorem Ipsum</div>
+                <div id="overlay_notification" class="overlay_notification"></div>
+
+                <div><input type="text" class="input" id="field1" placeholder="Lorem ipsum dolor sit amet." /></div>
+                <div><input type="text" class="input" id="field2" placeholder="Lorem ipsum dolor sit amet." /></div>
+                <div><input type="text" class="input" id="field3" placeholder="Lorem ipsum dolor sit amet." /></div>
+
+                <div class="overlay_buttons">
+                    <input type="hidden" id="id" value="0" />
+                    <a class="btn" onclick="SaveRecord()">Edit</a>
+                    <a class="btn" onclick="AddNewRecord()">Save</a>
+                    <a class="btn" onclick="DeleteRecord('')">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
